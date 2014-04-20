@@ -1,5 +1,5 @@
 APP			:= Targetron
-VERSION		:= 1.3.4
+VERSION		:= 1.3.5
 
 KSPDIR		:= /mnt/games/Steam/SteamApps/common/Kerbal\ Space\ Program
 MANAGED		:= ${KSPDIR}/KSP_Data/Managed

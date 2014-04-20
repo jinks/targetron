@@ -47,8 +47,8 @@ namespace Targetron
         private static Texture2D buttonDistDesc = new Texture2D(16, 16);
 
         //Filters
-        private static List<Filter> filters = new List<Filter>(9);
-        private static List<VesselType> vesselTypes= new List<VesselType>(9);
+        private static List<Filter> filters = new List<Filter>(10);
+        private static List<VesselType> vesselTypes= new List<VesselType>(10);
 
         //GUI Styles
         private static Texture2D contextBGN = new Texture2D(1, 1);
@@ -134,6 +134,7 @@ namespace Targetron
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/station.png"), VesselType.Station, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/lander.png"), VesselType.Lander, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/ship.png"), VesselType.Ship, true));
+                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/asteroid.png"), VesselType.SpaceObject, true));
             }
 
             //Create a separate List of vessel types that are being filtered. This ensures the Debris/Other catches any undefined vessel types.

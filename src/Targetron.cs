@@ -12,7 +12,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.3.4";
+        private const String VERSION = "1.4.0";
         private const int WINDOWID_GUI = 7225;
         private const int WINDOWID_TOOLTIP = 7226;
         private const int WINDOWID_CONTEXT = 7227;
@@ -97,8 +97,7 @@ namespace Targetron
         private static bool filterRCval = false;    //Last filter icon that was right clicked
 
         //For (optional) integration with Blizzy's Toolbar Plugin
-        protected bool ToolbarManagerLoaded;
-        internal ToolbarButtonWrapper ToolbarButton;
+        private IButton ToolbarButton;
 
         private static List<Target> targets = new List<Target>();  //List of available vessels
         private static Rect originalWindow = new Rect();   //Original window position/size
@@ -125,17 +124,17 @@ namespace Targetron
             //Load the texture and data structure to store toggle state
             if (filters.Count == 0)
             {
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/asteroid.png"), VesselType.SpaceObject, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/flag.png"), VesselType.Flag, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/eva.png"), VesselType.EVA, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/base.png"), VesselType.Base, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/station.png"), VesselType.Station, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/ship.png"), VesselType.Ship, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/lander.png"), VesselType.Lander, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/rover.png"), VesselType.Rover, true));
+				filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/probe.png"), VesselType.Probe, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/debris.png"), VesselType.Debris, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/flag.png"), VesselType.Flag, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/eva.png"), VesselType.EVA, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/base.png"), VesselType.Base, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/rover.png"), VesselType.Rover, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/probe.png"), VesselType.Probe, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/station.png"), VesselType.Station, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/lander.png"), VesselType.Lander, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/ship.png"), VesselType.Ship, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/asteroid.png"), VesselType.SpaceObject, true));
-            }
+			}
 
             //Create a separate List of vessel types that are being filtered. This ensures the Debris/Other catches any undefined vessel types.
             if (vesselTypes.Count == 0)
@@ -143,9 +142,6 @@ namespace Targetron
                 for (int i = 0; i < filters.Count; i++)
                     vesselTypes.Add(filters[i].Type);
             }
-
-            //Load Blizzy's Toolbar Plugin, if necessary
-            this.LoadToolbarManager();
         }
 
         public void Start()
@@ -166,6 +162,16 @@ namespace Targetron
             pos.height = Mathf.Clamp(pos.height, minWindowHeight, maxWindowHeight);
 
             RenderingManager.AddToPostDrawQueue(0, new Callback(OnDraw));
+
+            if (ToolbarManager.ToolbarAvailable)
+            {
+                this.ToolbarButton = ToolbarManager.Instance.add("Targetron", "tgbutton");
+                this.ToolbarButton.Text = "Targetron "+VERSION;
+                this.ToolbarButton.ToolTip = "Targetron " + VERSION;
+                this.ToolbarButton.TexturePath = "Targetron/Icons/targetron";
+                this.ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
+                this.ToolbarButton.OnClick += (e) => toggleOn = !toggleOn;
+            }
         }
 
         //Collapses the window
@@ -329,7 +335,7 @@ namespace Targetron
             if (toggleOn && inFlight)  //Check if in flight
             {
                 //Get the current skin
-                GUI.skin = HighLogic.Skin;
+                //GUI.skin = HighLogic.Skin;
                 if (buttonStyle == null)
                 {
                     initStyles();
@@ -507,7 +513,7 @@ namespace Targetron
         {
             //Save the expanded postion and collapse state
             saveConfig();
-            this.ToolbarButton.Destroy();
+            if (this.ToolbarButton != null) this.ToolbarButton.Destroy();
         }
 
         //Sorts Vessels by their distance from the active vessel
@@ -570,7 +576,7 @@ namespace Targetron
             }
 
             leftStyle.normal.textColor = new Color(1.0f, 0.858f, 0.0f); //Orange
-            GUI.Label(new Rect(6,0,titleWidth,20),curTarg, leftStyle);
+            GUI.Label(new Rect(6,0,titleWidth,24),curTarg, leftStyle);
 
             if (expand)
             {
@@ -627,7 +633,7 @@ namespace Targetron
                     expandWindow(); //Expand window if it has not already been done
 
                 //Display the scroll view for target list
-                scrollPosition = GUI.BeginScrollView(new Rect(4, 20, pos.width - 8, pos.height - 27 - 22), scrollPosition, new Rect(1, 24, pos.width-33, top > pos.height - 27 - 22? top : pos.height - 27 - 22), false, true);
+                scrollPosition = GUI.BeginScrollView(new Rect(4, 24, pos.width - 8, pos.height - 27 - 22), scrollPosition, new Rect(1, 16, pos.width-33, top > pos.height - 27 - 22? top : pos.height - 27 - 22), false, true);
                 top = 0;
 
                 int vesselFilter = 0;
@@ -977,26 +983,6 @@ namespace Targetron
             //Initialize Colors
             enabledColor = GUI.contentColor;
             enabledBGColor = GUI.backgroundColor;
-        }
-
-        protected void LoadToolbarManager()
-        {
-            this.ToolbarManagerLoaded = ToolbarButtonWrapper.ToolbarManagerPresent;
-            
-            if (this.ToolbarManagerLoaded)
-                this.InitializeToolbarButton();
-        }
-
-        protected void InitializeToolbarButton()
-        {
-            this.ToolbarButton = ToolbarButtonWrapper.TryWrapToolbarButton(this.GetType().Name, "targetron");
-            this.ToolbarButton.Text = "Targetron "+VERSION;
-            this.ToolbarButton.ToolTip = "Targetron " + VERSION;
-            this.ToolbarButton.TexturePath = "Targetron/Icons/targetron";
-            this.ToolbarButton.SetButtonVisibility(new GameScenes[] { GameScenes.FLIGHT });
-            this.ToolbarButton.AddButtonClickHandler(
-                    (e) => toggleOn = !toggleOn
-            );
         }
     }
 

@@ -1,3 +1,8 @@
+2014-04-21 (1.4.0) Jinks
+    * Disable GUIStyle for now (It messes up other GUIs), so you get the default Unity GUI
+      The GUI code could really use some love, but it's beyond me so far
+    * Update the ToolbarWrapper to blizzy's recent version
+
 2014-04-03 (1.3.5) agises
     * Incorporate Asteroids into the target list
 

@@ -1,5 +1,5 @@
 APP			:= Targetron
-VERSION		:= 1.3.5
+VERSION		:= 1.4.0
 
 KSPDIR		:= /mnt/games/Steam/SteamApps/common/Kerbal\ Space\ Program
 MANAGED		:= ${KSPDIR}/KSP_Data/Managed
@@ -39,6 +39,6 @@ install: all
 
 zip: all
 	rm -f ${APP}_${VERSION}.zip
-	${ZIP} -r ${APP}_${VERSION}.zip GameData README.md LICENSE
+	${ZIP} -r ${APP}_${VERSION}.zip GameData README.md LICENSE -x \*.keep
 
 .PHONY: all clean install zip

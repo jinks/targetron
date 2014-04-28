@@ -1,3 +1,7 @@
+2014-04-24 (1.4.1) agises
+    * fix gui skin issue
+    * code cleanup
+
 2014-04-21 (1.4.0) Jinks
     * Disable GUIStyle for now (It messes up other GUIs), so you get the default Unity GUI
       The GUI code could really use some love, but it's beyond me so far

@@ -473,19 +473,19 @@ namespace Targetron
                 if (new Rect(0, _top, contextPos.width, 20).Contains(Event.current.mousePosition))
                 {
                     m.part.SetHighlightColor(Color.red);
-                    m.part.SetHighlight(true);
+                    m.part.SetHighlight(true, false);
                 }
                 else
                 {
                     m.part.SetHighlightDefault();
-                    m.part.SetHighlight(false);
+                    m.part.SetHighlight(false, false);
                 }
 
                 if (GUI.Button(new Rect(0, _top, contextPos.width, 20), "Target " + m.part.partInfo.title, temp))
                 {
                     FlightGlobals.fetch.SetVesselTarget(m);
                     m.part.SetHighlightDefault();
-                    m.part.SetHighlight(false);
+                    m.part.SetHighlight(false, false);
                     contextActive = null;
                 }
                 GUI.enabled = true;

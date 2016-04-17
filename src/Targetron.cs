@@ -11,7 +11,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.4.2.1";
+        private const String VERSION = "1.4.3";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -158,8 +158,6 @@ namespace Targetron
             pos.width = Mathf.Clamp(pos.width, minWindowWidth, maxWindowWidth);
             pos.height = Mathf.Clamp(pos.height, minWindowHeight, maxWindowHeight);
 
-            RenderingManager.AddToPostDrawQueue(0, OnDraw);
-
             if (!ToolbarManager.ToolbarAvailable) return;
             ToolbarButton = ToolbarManager.Instance.add("Targetron", "tgbutton");
             ToolbarButton.Text = "Targetron " + VERSION;
@@ -189,6 +187,11 @@ namespace Targetron
             if (pos.x > (Screen.width - pos.width) / 2.0f)
                 pos.x -= lastWidth - pos.width;
             pos.width = lastWidth;
+        }
+
+        public void OnGUI()
+        {
+            OnDraw();
         }
 
         public void Update()

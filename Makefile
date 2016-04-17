@@ -1,5 +1,5 @@
 APP			:= Targetron
-VERSION		:= 1.4.2.1
+VERSION		:= 1.4.3
 
 KSPDIR		:= /mnt/games/Steam/SteamApps/common/Kerbal\ Space\ Program
 MANAGED		:= ${KSPDIR}/KSP_Data/Managed
@@ -27,7 +27,7 @@ info:
 
 ${TARGETS}: ${SRC_FILES}
 	${GMCS} -t:library -lib:${MANAGED} \
-		-r:Assembly-CSharp,UnityEngine \
+		-r:Assembly-CSharp,UnityEngine,KSPUtil,UnityEngine.UI \
 		-out:$@ $^
 
 clean:

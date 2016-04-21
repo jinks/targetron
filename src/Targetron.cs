@@ -11,7 +11,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.4.2.1";
+        private const String VERSION = "1.4.4";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -158,8 +158,6 @@ namespace Targetron
             pos.width = Mathf.Clamp(pos.width, minWindowWidth, maxWindowWidth);
             pos.height = Mathf.Clamp(pos.height, minWindowHeight, maxWindowHeight);
 
-            RenderingManager.AddToPostDrawQueue(0, OnDraw);
-
             if (!ToolbarManager.ToolbarAvailable) return;
             ToolbarButton = ToolbarManager.Instance.add("Targetron", "tgbutton");
             ToolbarButton.Text = "Targetron " + VERSION;
@@ -167,6 +165,25 @@ namespace Targetron
             ToolbarButton.TexturePath = "Targetron/Icons/targetron";
             ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
             ToolbarButton.OnClick += e => toggleOn = !toggleOn;
+            GameEvents.onVesselChange.Add(saveConfig);
+        }
+
+        private void saveConfig(Vessel data)
+        {
+            if (!expand)
+                expandWindow();
+
+            config.SetValue("version", VERSION);
+            config.SetValue("pos", pos);
+            config.SetValue("expand", expand);
+            config.SetValue("toggleOn", toggleOn);
+            for (int i = 0; i < filters.Count; i++)
+                config.SetValue("filter" + i, filters[i].Enabled);
+            config.SetValue("sortMode", sortMode);
+            config.save();
+
+            if (!expand)
+                collapseWindow();
         }
 
         //Collapses the window
@@ -189,6 +206,11 @@ namespace Targetron
             if (pos.x > (Screen.width - pos.width) / 2.0f)
                 pos.x -= lastWidth - pos.width;
             pos.width = lastWidth;
+        }
+
+        public void OnGUI()
+        {
+            OnDraw();
         }
 
         public void Update()
@@ -504,6 +526,7 @@ namespace Targetron
             //Save the expanded postion and collapse state
             saveConfig();
             if (ToolbarButton != null) ToolbarButton.Destroy();
+            GameEvents.onVesselChange.Remove(saveConfig);
         }
 
         //Sorts Vessels by their distance from the active vessel

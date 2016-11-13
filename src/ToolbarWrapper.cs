@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2013-2014, Maik Schreiber
+Copyright (c) 2013-2016, Maik Schreiber
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -25,55 +25,62 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
 
 
 // TODO: Change to your plugin's namespace here.
-namespace Targetron {
+namespace Targetron
+{
 
 
 
     /**********************************************************\
-    *          --- DO NOT EDIT BELOW THIS COMMENT ---          *
-    *                                                          *
-    * This file contains classes and interfaces to use the     *
-    * Toolbar Plugin without creating a hard dependency on it. *
-    *                                                          *
-    * There is nothing in this file that needs to be edited    *
-    * by hand.                                                 *
-    *                                                          *
-    *          --- DO NOT EDIT BELOW THIS COMMENT ---          *
-    \**********************************************************/
+	*          --- DO NOT EDIT BELOW THIS COMMENT ---          *
+	*                                                          *
+	* This file contains classes and interfaces to use the     *
+	* Toolbar Plugin without creating a hard dependency on it. *
+	*                                                          *
+	* There is nothing in this file that needs to be edited    *
+	* by hand.                                                 *
+	*                                                          *
+	*          --- DO NOT EDIT BELOW THIS COMMENT ---          *
+	\**********************************************************/
 
 
 
     /// <summary>
     /// The global tool bar manager.
     /// </summary>
-    public partial class ToolbarManager : IToolbarManager {
+    public partial class ToolbarManager : IToolbarManager
+    {
         /// <summary>
         /// Whether the Toolbar Plugin is available.
         /// </summary>
-        public static bool ToolbarAvailable {
-            get {
-                if (toolbarAvailable == null) {
+        public static bool ToolbarAvailable
+        {
+            get
+            {
+                if (toolbarAvailable == null)
+                {
                     toolbarAvailable = Instance != null;
                 }
-                return (bool) toolbarAvailable;
+                return (bool)toolbarAvailable;
             }
         }
 
         /// <summary>
         /// The global tool bar manager instance.
         /// </summary>
-        public static IToolbarManager Instance {
-            get {
-                if ((toolbarAvailable != false) && (instance_ == null)) {
+        public static IToolbarManager Instance
+        {
+            get
+            {
+                if ((toolbarAvailable != false) && (instance_ == null))
+                {
                     Type type = ToolbarTypes.getType("Toolbar.ToolbarManager");
-                    if (type != null) {
+                    if (type != null)
+                    {
                         object realToolbarManager = ToolbarTypes.getStaticProperty(type, "Instance").GetValue(null, null);
                         instance_ = new ToolbarManager(realToolbarManager);
                     }
@@ -88,7 +95,8 @@ namespace Targetron {
     /// <summary>
     /// A toolbar manager.
     /// </summary>
-    public interface IToolbarManager {
+    public interface IToolbarManager
+    {
         /// <summary>
         /// Adds a new button.
         /// </summary>
@@ -105,7 +113,8 @@ namespace Targetron {
     /// <summary>
     /// Represents a clickable button.
     /// </summary>
-    public interface IButton {
+    public interface IButton
+    {
         /// <summary>
         /// The text displayed on the button. Set to null to hide text.
         /// </summary>
@@ -114,7 +123,8 @@ namespace Targetron {
         /// modify the button's size, this feature should be used sparingly, if at all.
         /// </remarks>
         /// <seealso cref="TexturePath"/>
-        string Text {
+        string Text
+        {
             set;
             get;
         }
@@ -125,7 +135,8 @@ namespace Targetron {
         /// <remarks>
         /// The text color can be changed at any time to modify the button's appearance.
         /// </remarks>
-        Color TextColor {
+        Color TextColor
+        {
             set;
             get;
         }
@@ -150,7 +161,8 @@ namespace Targetron {
         /// </para>
         /// </remarks>
         /// <seealso cref="Text"/>
-        string TexturePath {
+        string TexturePath
+        {
             set;
             get;
         }
@@ -161,7 +173,8 @@ namespace Targetron {
         /// <remarks>
         /// Tool Tip Text Should Always Use Headline Style Like This.
         /// </remarks>
-        string ToolTip {
+        string ToolTip
+        {
             set;
             get;
         }
@@ -173,7 +186,8 @@ namespace Targetron {
         /// Setting this property to true does not affect the player's ability to hide the button using the configuration.
         /// Conversely, setting this property to false does not enable the player to show the button using the configuration.
         /// </remarks>
-        bool Visible {
+        bool Visible
+        {
             set;
             get;
         }
@@ -185,7 +199,8 @@ namespace Targetron {
         /// The return value from IVisibility.Visible is subject to the same rules as outlined for
         /// <see cref="Visible"/>.
         /// </remarks>
-        IVisibility Visibility {
+        IVisibility Visibility
+        {
             set;
             get;
         }
@@ -199,7 +214,8 @@ namespace Targetron {
         /// does not reflect button invisibility in those scenes. In addition, this property does not reflect the
         /// player's configuration of the button's visibility.
         /// </remarks>
-        bool EffectivelyVisible {
+        bool EffectivelyVisible
+        {
             get;
         }
 
@@ -207,7 +223,8 @@ namespace Targetron {
         /// Whether this button is currently enabled (clickable) or not. This does not affect the player's ability to
         /// position the button on their toolbar.
         /// </summary>
-        bool Enabled {
+        bool Enabled
+        {
             set;
             get;
         }
@@ -234,7 +251,8 @@ namespace Targetron {
         /// screen even when it normally wouldn't.
         /// </para>
         /// </remarks>
-        bool Important {
+        bool Important
+        {
             set;
             get;
         }
@@ -243,7 +261,8 @@ namespace Targetron {
         /// A drawable that is tied to the current button. This can be anything from a popup menu to
         /// an informational window. Set to null to hide the drawable.
         /// </summary>
-        IDrawable Drawable {
+        IDrawable Drawable
+        {
             set;
             get;
         }
@@ -298,7 +317,8 @@ namespace Targetron {
     /// A drawable that is tied to a particular button. This can be anything from a popup menu
     /// to an informational window.
     /// </summary>
-    public interface IDrawable {
+    public interface IDrawable
+    {
         /// <summary>
         /// Update any information. This is called once per frame.
         /// </summary>
@@ -324,7 +344,8 @@ namespace Targetron {
     /// <summary>
     /// Event describing a click on a button.
     /// </summary>
-    public partial class ClickEvent : EventArgs {
+    public partial class ClickEvent : EventArgs
+    {
         /// <summary>
         /// The button that has been clicked.
         /// </summary>
@@ -348,7 +369,8 @@ namespace Targetron {
     /// <summary>
     /// Event describing the mouse pointer moving about a button.
     /// </summary>
-    public abstract partial class MouseMoveEvent {
+    public abstract partial class MouseMoveEvent
+    {
         /// <summary>
         /// The button in question.
         /// </summary>
@@ -358,13 +380,15 @@ namespace Targetron {
     /// <summary>
     /// Event describing the mouse pointer entering a button's area.
     /// </summary>
-    public partial class MouseEnterEvent : MouseMoveEvent {
+    public partial class MouseEnterEvent : MouseMoveEvent
+    {
     }
 
     /// <summary>
     /// Event describing the mouse pointer leaving a button's area.
     /// </summary>
-    public partial class MouseLeaveEvent : MouseMoveEvent {
+    public partial class MouseLeaveEvent : MouseMoveEvent
+    {
     }
 
     /// <summary>
@@ -387,12 +411,14 @@ namespace Targetron {
     /// Determines visibility of a button.
     /// </summary>
     /// <seealso cref="IButton.Visibility"/>
-    public interface IVisibility {
+    public interface IVisibility
+    {
         /// <summary>
         /// Whether a button is currently visible or not.
         /// </summary>
         /// <seealso cref="IButton.Visible"/>
-        bool Visible {
+        bool Visible
+        {
             get;
         }
     }
@@ -403,21 +429,25 @@ namespace Targetron {
     /// <example>
     /// <code>
     /// IButton button = ...
-    /// button.Visibility = new GameScenesVisibility(GameScenes.EDITOR, GameScenes.SPH);
+    /// button.Visibility = new GameScenesVisibility(GameScenes.EDITOR, GameScenes.FLIGHT);
     /// </code>
     /// </example>
     /// <seealso cref="IButton.Visibility"/>
-    public class GameScenesVisibility : IVisibility {
-        public bool Visible {
-            get {
-                return (bool) visibleProperty.GetValue(realGameScenesVisibility, null);
+    public class GameScenesVisibility : IVisibility
+    {
+        public bool Visible
+        {
+            get
+            {
+                return (bool)visibleProperty.GetValue(realGameScenesVisibility, null);
             }
         }
 
         private object realGameScenesVisibility;
         private PropertyInfo visibleProperty;
 
-        public GameScenesVisibility(params GameScenes[] gameScenes) {
+        public GameScenesVisibility(params GameScenes[] gameScenes)
+        {
             Type gameScenesVisibilityType = ToolbarTypes.getType("Toolbar.GameScenesVisibility");
             realGameScenesVisibility = Activator.CreateInstance(gameScenesVisibilityType, new object[] { gameScenes });
             visibleProperty = ToolbarTypes.getProperty(gameScenesVisibilityType, "Visible");
@@ -431,15 +461,19 @@ namespace Targetron {
     /// <summary>
     /// A drawable that draws a popup menu.
     /// </summary>
-    public partial class PopupMenuDrawable : IDrawable {
+    public partial class PopupMenuDrawable : IDrawable
+    {
         /// <summary>
         /// Event handler that can be registered with to receive "any menu option clicked" events.
         /// </summary>
-        public event Action OnAnyOptionClicked {
-            add {
+        public event Action OnAnyOptionClicked
+        {
+            add
+            {
                 onAnyOptionClickedEvent.AddEventHandler(realPopupMenuDrawable, value);
             }
-            remove {
+            remove
+            {
                 onAnyOptionClickedEvent.RemoveEventHandler(realPopupMenuDrawable, value);
             }
         }
@@ -452,7 +486,8 @@ namespace Targetron {
         private MethodInfo destroyMethod;
         private EventInfo onAnyOptionClickedEvent;
 
-        public PopupMenuDrawable() {
+        public PopupMenuDrawable()
+        {
             Type popupMenuDrawableType = ToolbarTypes.getType("Toolbar.PopupMenuDrawable");
             realPopupMenuDrawable = Activator.CreateInstance(popupMenuDrawableType, null);
             updateMethod = ToolbarTypes.getMethod(popupMenuDrawableType, "Update");
@@ -463,12 +498,14 @@ namespace Targetron {
             onAnyOptionClickedEvent = ToolbarTypes.getEvent(popupMenuDrawableType, "OnAnyOptionClicked");
         }
 
-        public void Update() {
+        public void Update()
+        {
             updateMethod.Invoke(realPopupMenuDrawable, null);
         }
 
-        public Vector2 Draw(Vector2 position) {
-            return (Vector2) drawMethod.Invoke(realPopupMenuDrawable, new object[] { position });
+        public Vector2 Draw(Vector2 position)
+        {
+            return (Vector2)drawMethod.Invoke(realPopupMenuDrawable, new object[] { position });
         }
 
         /// <summary>
@@ -476,7 +513,8 @@ namespace Targetron {
         /// </summary>
         /// <param name="text">The text of the option.</param>
         /// <returns>A button that can be used to register clicks on the menu option.</returns>
-        public IButton AddOption(string text) {
+        public IButton AddOption(string text)
+        {
             object realButton = addOptionMethod.Invoke(realPopupMenuDrawable, new object[] { text });
             return new Button(realButton, new ToolbarTypes());
         }
@@ -484,14 +522,16 @@ namespace Targetron {
         /// <summary>
         /// Adds a separator to the popup menu.
         /// </summary>
-        public void AddSeparator() {
+        public void AddSeparator()
+        {
             addSeparatorMethod.Invoke(realPopupMenuDrawable, null);
         }
 
         /// <summary>
         /// Destroys this drawable. This must always be called before disposing of this drawable.
         /// </summary>
-        public void Destroy() {
+        public void Destroy()
+        {
             destroyMethod.Invoke(realPopupMenuDrawable, null);
         }
     }
@@ -500,7 +540,8 @@ namespace Targetron {
 
     #region private implementations
 
-    public partial class ToolbarManager : IToolbarManager {
+    public partial class ToolbarManager : IToolbarManager
+    {
         private static bool? toolbarAvailable = null;
         private static IToolbarManager instance_;
 
@@ -509,13 +550,15 @@ namespace Targetron {
         private Dictionary<object, IButton> buttons = new Dictionary<object, IButton>();
         private ToolbarTypes types = new ToolbarTypes();
 
-        private ToolbarManager(object realToolbarManager) {
+        private ToolbarManager(object realToolbarManager)
+        {
             this.realToolbarManager = realToolbarManager;
 
             addMethod = ToolbarTypes.getMethod(types.iToolbarManagerType, "add");
         }
 
-        public IButton add(string ns, string id) {
+        public IButton add(string ns, string id)
+        {
             object realButton = addMethod.Invoke(realToolbarManager, new object[] { ns, id });
             IButton button = new Button(realButton, types);
             buttons.Add(realButton, button);
@@ -523,14 +566,16 @@ namespace Targetron {
         }
     }
 
-    internal class Button : IButton {
+    internal class Button : IButton
+    {
         private object realButton;
         private ToolbarTypes types;
         private Delegate realClickHandler;
         private Delegate realMouseEnterHandler;
         private Delegate realMouseLeaveHandler;
 
-        internal Button(object realButton, ToolbarTypes types) {
+        internal Button(object realButton, ToolbarTypes types)
+        {
             this.realButton = realButton;
             this.types = types;
 
@@ -539,101 +584,132 @@ namespace Targetron {
             realMouseLeaveHandler = attachEventHandler(types.button.onMouseLeaveEvent, "mouseLeft", realButton);
         }
 
-        private Delegate attachEventHandler(EventInfo @event, string methodName, object realButton) {
+        private Delegate attachEventHandler(EventInfo @event, string methodName, object realButton)
+        {
             MethodInfo method = GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             Delegate d = Delegate.CreateDelegate(@event.EventHandlerType, this, method);
             @event.AddEventHandler(realButton, d);
             return d;
         }
 
-        public string Text {
-            set {
+        public string Text
+        {
+            set
+            {
                 types.button.textProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (string) types.button.textProperty.GetValue(realButton, null);
+            get
+            {
+                return (string)types.button.textProperty.GetValue(realButton, null);
             }
         }
 
-        public Color TextColor {
-            set {
+        public Color TextColor
+        {
+            set
+            {
                 types.button.textColorProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (Color) types.button.textColorProperty.GetValue(realButton, null);
+            get
+            {
+                return (Color)types.button.textColorProperty.GetValue(realButton, null);
             }
         }
 
-        public string TexturePath {
-            set {
+        public string TexturePath
+        {
+            set
+            {
                 types.button.texturePathProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (string) types.button.texturePathProperty.GetValue(realButton, null);
+            get
+            {
+                return (string)types.button.texturePathProperty.GetValue(realButton, null);
             }
         }
 
-        public string ToolTip {
-            set {
+        public string ToolTip
+        {
+            set
+            {
                 types.button.toolTipProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (string) types.button.toolTipProperty.GetValue(realButton, null);
+            get
+            {
+                return (string)types.button.toolTipProperty.GetValue(realButton, null);
             }
         }
 
-        public bool Visible {
-            set {
+        public bool Visible
+        {
+            set
+            {
                 types.button.visibleProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (bool) types.button.visibleProperty.GetValue(realButton, null);
+            get
+            {
+                return (bool)types.button.visibleProperty.GetValue(realButton, null);
             }
         }
 
-        public IVisibility Visibility {
-            set {
+        public IVisibility Visibility
+        {
+            set
+            {
                 object functionVisibility = null;
-                if (value != null) {
+                if (value != null)
+                {
                     functionVisibility = Activator.CreateInstance(types.functionVisibilityType, new object[] { new Func<bool>(() => value.Visible) });
                 }
                 types.button.visibilityProperty.SetValue(realButton, functionVisibility, null);
                 visibility_ = value;
             }
-            get {
+            get
+            {
                 return visibility_;
             }
         }
         private IVisibility visibility_;
 
-        public bool EffectivelyVisible {
-            get {
-                return (bool) types.button.effectivelyVisibleProperty.GetValue(realButton, null);
+        public bool EffectivelyVisible
+        {
+            get
+            {
+                return (bool)types.button.effectivelyVisibleProperty.GetValue(realButton, null);
             }
         }
 
-        public bool Enabled {
-            set {
+        public bool Enabled
+        {
+            set
+            {
                 types.button.enabledProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (bool) types.button.enabledProperty.GetValue(realButton, null);
+            get
+            {
+                return (bool)types.button.enabledProperty.GetValue(realButton, null);
             }
         }
 
-        public bool Important {
-            set {
+        public bool Important
+        {
+            set
+            {
                 types.button.importantProperty.SetValue(realButton, value, null);
             }
-            get {
-                return (bool) types.button.importantProperty.GetValue(realButton, null);
+            get
+            {
+                return (bool)types.button.importantProperty.GetValue(realButton, null);
             }
         }
 
-        public IDrawable Drawable {
-            set {
+        public IDrawable Drawable
+        {
+            set
+            {
                 object functionDrawable = null;
-                if (value != null) {
+                if (value != null)
+                {
                     functionDrawable = Activator.CreateInstance(types.functionDrawableType, new object[] {
                         new Action(() => value.Update()),
                         new Func<Vector2, Vector2>((pos) => value.Draw(pos))
@@ -642,7 +718,8 @@ namespace Targetron {
                 types.button.drawableProperty.SetValue(realButton, functionDrawable, null);
                 drawable_ = value;
             }
-            get {
+            get
+            {
                 return drawable_;
             }
         }
@@ -650,29 +727,36 @@ namespace Targetron {
 
         public event ClickHandler OnClick;
 
-        private void clicked(object realEvent) {
-            if (OnClick != null) {
+        private void clicked(object realEvent)
+        {
+            if (OnClick != null)
+            {
                 OnClick(new ClickEvent(realEvent, this));
             }
         }
 
         public event MouseEnterHandler OnMouseEnter;
 
-        private void mouseEntered(object realEvent) {
-            if (OnMouseEnter != null) {
+        private void mouseEntered(object realEvent)
+        {
+            if (OnMouseEnter != null)
+            {
                 OnMouseEnter(new MouseEnterEvent(this));
             }
         }
 
         public event MouseLeaveHandler OnMouseLeave;
 
-        private void mouseLeft(object realEvent) {
-            if (OnMouseLeave != null) {
+        private void mouseLeft(object realEvent)
+        {
+            if (OnMouseLeave != null)
+            {
                 OnMouseLeave(new MouseLeaveEvent(this));
             }
         }
 
-        public void Destroy() {
+        public void Destroy()
+        {
             detachEventHandler(types.button.onClickEvent, realClickHandler, realButton);
             detachEventHandler(types.button.onMouseEnterEvent, realMouseEnterHandler, realButton);
             detachEventHandler(types.button.onMouseLeaveEvent, realMouseLeaveHandler, realButton);
@@ -680,44 +764,55 @@ namespace Targetron {
             types.button.destroyMethod.Invoke(realButton, null);
         }
 
-        private void detachEventHandler(EventInfo @event, Delegate d, object realButton) {
+        private void detachEventHandler(EventInfo @event, Delegate d, object realButton)
+        {
             @event.RemoveEventHandler(realButton, d);
         }
     }
 
-    public partial class ClickEvent : EventArgs {
-        internal ClickEvent(object realEvent, IButton button) {
+    public partial class ClickEvent : EventArgs
+    {
+        internal ClickEvent(object realEvent, IButton button)
+        {
             Type type = realEvent.GetType();
             Button = button;
-            MouseButton = (int) type.GetField("MouseButton", BindingFlags.Public | BindingFlags.Instance).GetValue(realEvent);
+            MouseButton = (int)type.GetField("MouseButton", BindingFlags.Public | BindingFlags.Instance).GetValue(realEvent);
         }
     }
 
-    public abstract partial class MouseMoveEvent : EventArgs {
-        internal MouseMoveEvent(IButton button) {
+    public abstract partial class MouseMoveEvent : EventArgs
+    {
+        internal MouseMoveEvent(IButton button)
+        {
             this.button = button;
         }
     }
 
-    public partial class MouseEnterEvent : MouseMoveEvent {
+    public partial class MouseEnterEvent : MouseMoveEvent
+    {
         internal MouseEnterEvent(IButton button)
-            : base(button) {
+            : base(button)
+        {
         }
     }
 
-    public partial class MouseLeaveEvent : MouseMoveEvent {
+    public partial class MouseLeaveEvent : MouseMoveEvent
+    {
         internal MouseLeaveEvent(IButton button)
-            : base(button) {
+            : base(button)
+        {
         }
     }
 
-    internal class ToolbarTypes {
+    internal class ToolbarTypes
+    {
         internal readonly Type iToolbarManagerType;
         internal readonly Type functionVisibilityType;
         internal readonly Type functionDrawableType;
         internal readonly ButtonTypes button;
 
-        internal ToolbarTypes() {
+        internal ToolbarTypes()
+        {
             iToolbarManagerType = getType("Toolbar.IToolbarManager");
             functionVisibilityType = getType("Toolbar.FunctionVisibility");
             functionDrawableType = getType("Toolbar.FunctionDrawable");
@@ -726,30 +821,41 @@ namespace Targetron {
             button = new ButtonTypes(iButtonType);
         }
 
-        internal static Type getType(string name) {
-            return AssemblyLoader.loadedAssemblies
-                .SelectMany(a => a.assembly.GetExportedTypes())
-                .SingleOrDefault(t => t.FullName == name);
+        internal static Type getType(string name)
+        {
+            Type type = null;
+            AssemblyLoader.loadedAssemblies.TypeOperation(t => {
+                if (t.FullName == name)
+                {
+                    type = t;
+                }
+            });
+            return type;
         }
 
-        internal static PropertyInfo getProperty(Type type, string name) {
+        internal static PropertyInfo getProperty(Type type, string name)
+        {
             return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
         }
 
-        internal static PropertyInfo getStaticProperty(Type type, string name) {
+        internal static PropertyInfo getStaticProperty(Type type, string name)
+        {
             return type.GetProperty(name, BindingFlags.Public | BindingFlags.Static);
         }
 
-        internal static EventInfo getEvent(Type type, string name) {
+        internal static EventInfo getEvent(Type type, string name)
+        {
             return type.GetEvent(name, BindingFlags.Public | BindingFlags.Instance);
         }
 
-        internal static MethodInfo getMethod(Type type, string name) {
+        internal static MethodInfo getMethod(Type type, string name)
+        {
             return type.GetMethod(name, BindingFlags.Public | BindingFlags.Instance);
         }
     }
 
-    internal class ButtonTypes {
+    internal class ButtonTypes
+    {
         internal readonly Type iButtonType;
         internal readonly PropertyInfo textProperty;
         internal readonly PropertyInfo textColorProperty;
@@ -766,7 +872,8 @@ namespace Targetron {
         internal readonly EventInfo onMouseLeaveEvent;
         internal readonly MethodInfo destroyMethod;
 
-        internal ButtonTypes(Type iButtonType) {
+        internal ButtonTypes(Type iButtonType)
+        {
             this.iButtonType = iButtonType;
 
             textProperty = ToolbarTypes.getProperty(iButtonType, "Text");

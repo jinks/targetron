@@ -11,7 +11,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.4.4";
+        private const String VERSION = "1.5.0";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -133,6 +133,8 @@ namespace Targetron
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/rover.png"), VesselType.Rover, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/probe.png"), VesselType.Probe, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/debris.png"), VesselType.Debris, true));
+                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/plane.png"), VesselType.Plane, true));
+                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/relay.png"), VesselType.Relay, true));
             }
 
             //Create a separate List of vessel types that are being filtered. This ensures the Debris/Other catches any undefined vessel types.

@@ -11,7 +11,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.5.0";
+        private const String VERSION = "1.5.1";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -89,6 +89,7 @@ namespace Targetron
         private static float lastWidth = windowWidth;    //Expanded height for use when window is collapsed
         private static bool expand = true;    //Toggle state for window
         private static bool toggleOn = true;    //Show/hide state for window
+        private static bool lastToggleOn;
         private static int sortMode;    //0 = Distance Ascending, 1 = Distance Descending, 2 = Name Ascending, 3 = Name Descending
         private static bool inFlight;    //Toggle state for window
         private static String searchStr = string.Empty;   //Current search string
@@ -168,6 +169,8 @@ namespace Targetron
             ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
             ToolbarButton.OnClick += e => toggleOn = !toggleOn;
             GameEvents.onVesselChange.Add(saveConfig);
+            GameEvents.onHideUI.Add(OnHideUI);
+            GameEvents.onShowUI.Add(OnShowUI);
         }
 
         private void saveConfig(Vessel data)
@@ -312,7 +315,6 @@ namespace Targetron
                 contextActive = null;
                 filterRC = -1;
             }
-
 
             //Close the context menu on left click anywhere outside of it
             if (contextActive != null && Input.GetMouseButton(0) && !contextPos.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y)))
@@ -1013,6 +1015,19 @@ namespace Targetron
             //Initialize Colors
             enabledColor = GUI.contentColor;
             enabledBGColor = GUI.backgroundColor;
+        }
+        private void OnShowUI()
+        {
+            if (lastToggleOn)
+            {
+                toggleOn = true;
+            }
+        }
+
+        private void OnHideUI()
+        {
+            lastToggleOn = toggleOn;
+            toggleOn = false;
         }
     }
 

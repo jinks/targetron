@@ -2,6 +2,7 @@ using KSP.IO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using KSP.UI.Screens;
 using UnityEngine;
 
 namespace Targetron
@@ -105,6 +106,7 @@ namespace Targetron
         private static bool handleClicked2;        //Bottom left resize handle active?
         private static bool resetCursor = true;
         private static Vector3 clickedPosition;    //Position where resize handle was originally clicked
+        private ApplicationLauncherButton stockLauncherButton;
 
         public void Awake()
         {
@@ -160,7 +162,14 @@ namespace Targetron
             //Make sure width and height are within limits
             pos.width = Mathf.Clamp(pos.width, minWindowWidth, maxWindowWidth);
             pos.height = Mathf.Clamp(pos.height, minWindowHeight, maxWindowHeight);
-
+            //stock toolbar
+            GameEvents.onGUIApplicationLauncherReady.Add(AddToolbarButton);
+            GameEvents.onGameSceneLoadRequested.Add(OnSceneChangeRequest);
+            //event hooks
+            GameEvents.onVesselChange.Add(saveConfig);
+            GameEvents.onHideUI.Add(OnHideUI);
+            GameEvents.onShowUI.Add(OnShowUI);
+            //toolbar stuff
             if (!ToolbarManager.ToolbarAvailable) return;
             ToolbarButton = ToolbarManager.Instance.add("Targetron", "tgbutton");
             ToolbarButton.Text = "Targetron " + VERSION;
@@ -168,9 +177,6 @@ namespace Targetron
             ToolbarButton.TexturePath = "Targetron/Icons/targetron";
             ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
             ToolbarButton.OnClick += e => toggleOn = !toggleOn;
-            GameEvents.onVesselChange.Add(saveConfig);
-            GameEvents.onHideUI.Add(OnHideUI);
-            GameEvents.onShowUI.Add(OnShowUI);
         }
 
         private void saveConfig(Vessel data)
@@ -531,6 +537,12 @@ namespace Targetron
             saveConfig();
             if (ToolbarButton != null) ToolbarButton.Destroy();
             GameEvents.onVesselChange.Remove(saveConfig);
+            GameEvents.onGameSceneLoadRequested.Remove(OnSceneChangeRequest);
+            if (stockLauncherButton != null)
+            {
+                ApplicationLauncher.Instance.RemoveModApplication(stockLauncherButton);
+                stockLauncherButton = null;
+            }
         }
 
         //Sorts Vessels by their distance from the active vessel
@@ -1028,6 +1040,29 @@ namespace Targetron
         {
             lastToggleOn = toggleOn;
             toggleOn = false;
+        }
+
+        private void Toggle()
+        {
+            toggleOn = !toggleOn;
+        }
+
+        private void AddToolbarButton()
+        {
+            GameEvents.onGUIApplicationLauncherReady.Remove(AddToolbarButton);
+            stockLauncherButton = ApplicationLauncher.Instance.AddModApplication(
+                Toggle, Toggle, null, null, null, null,
+                ApplicationLauncher.AppScenes.FLIGHT | ApplicationLauncher.AppScenes.MAPVIEW,
+                GameDatabase.Instance.GetTexture("Targetron/Icons/targetron", false));
+        }
+
+        public void OnSceneChangeRequest(GameScenes scene)
+        {
+            if (stockLauncherButton != null)
+            {
+                ApplicationLauncher.Instance.RemoveModApplication(stockLauncherButton);
+                stockLauncherButton = null;
+            }
         }
     }
 

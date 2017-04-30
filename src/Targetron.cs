@@ -47,8 +47,8 @@ namespace Targetron
         private static readonly Texture2D buttonDistDesc = new Texture2D(16, 16);
 
         //Filters
-        private static List<Filter> filters = new List<Filter>(10);
-        private static List<VesselType> vesselTypes = new List<VesselType>(10);
+        private static List<Filter> filters = new List<Filter>(12);
+        private static List<VesselType> vesselTypes = new List<VesselType>(12);
 
         //GUI Styles
         private static readonly Texture2D contextBGN = new Texture2D(1, 1);
@@ -176,7 +176,7 @@ namespace Targetron
             ToolbarButton.ToolTip = "Targetron " + VERSION;
             ToolbarButton.TexturePath = "Targetron/Icons/targetron";
             ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
-            ToolbarButton.OnClick += e => toggleOn = !toggleOn;
+            ToolbarButton.OnClick += e => Toggle();
         }
 
         private void saveConfig(Vessel data)
@@ -440,7 +440,7 @@ namespace Targetron
                 }
                 else if (contextActive != null && activeDockingNode != null && activeDockingNode.part.highlightType == Part.HighlightType.Disabled)
                     activeDockingNode.part.SetHighlight(true);
-                
+
                 if (lastActiveDockingNode != null && (contextActive == null || activeDockingNode == null || !lastActiveDockingNode.Equals(activeDockingNode)))
                 {
                     lastActiveDockingNode.part.SetHighlight(false);
@@ -765,6 +765,8 @@ namespace Targetron
                     GUILayout.EndHorizontal();
                     top += 24;
                 }
+                // Ugly workaround for don't cut off the last entry in the target list
+                top += 12;
                 // For testing purposes
                 /* for (int i = 0; i < 50; i++)
                  {

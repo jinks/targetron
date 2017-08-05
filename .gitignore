@@ -4,3 +4,12 @@
 
 #Compiled files
 *.dll
+*.zip
+src/.vs/
+src/Properties/
+src/Targetron.csproj
+src/Targetron.csproj.user
+src/Targetron.sln
+src/Targetron.sln.DotSettings.user
+src/bin/
+src/obj/

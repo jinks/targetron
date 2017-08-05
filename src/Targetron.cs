@@ -12,7 +12,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.6.0";
+        private const String VERSION = "1.6.1";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -174,7 +174,7 @@ namespace Targetron
             ToolbarButton = ToolbarManager.Instance.add("Targetron", "tgbutton");
             ToolbarButton.Text = "Targetron " + VERSION;
             ToolbarButton.ToolTip = "Targetron " + VERSION;
-            ToolbarButton.TexturePath = "Targetron/Icons/targetron";
+            ToolbarButton.TexturePath = "Targetron/Icons/targetrontb";
             ToolbarButton.Visibility = new GameScenesVisibility(GameScenes.FLIGHT);
             ToolbarButton.OnClick += e => Toggle();
         }

@@ -12,7 +12,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.6.1";
+        private const String VERSION = "1.6.3";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -432,20 +432,20 @@ namespace Targetron
             }
 
             //Highlight target red if docking node
-            /*if (FlightGlobals.fetch.VesselTarget is ModuleDockingNode)
+            if (FlightGlobals.fetch.VesselTarget is ModuleDockingNode)
                 {
                     ModuleDockingNode d = (ModuleDockingNode)FlightGlobals.fetch.VesselTarget; //Create specific instance to acccess docking node details
                     d.part.SetHighlightColor(Color.red);
-                    d.part.SetHighlight(true);
+                    d.part.SetHighlight(true, false);
                 }
                 else if (contextActive != null && activeDockingNode != null && activeDockingNode.part.highlightType == Part.HighlightType.Disabled)
-                    activeDockingNode.part.SetHighlight(true);
+                    activeDockingNode.part.SetHighlight(true, false);
 
                 if (lastActiveDockingNode != null && (contextActive == null || activeDockingNode == null || !lastActiveDockingNode.Equals(activeDockingNode)))
                 {
-                    lastActiveDockingNode.part.SetHighlight(false);
+                    lastActiveDockingNode.part.SetHighlight(false, false);
                     lastActiveDockingNode = null;
-                }*/
+                }
             // Restore the skin so we don't interfere others plugins skins?
             GUI.skin = defSkin;
         }
@@ -742,7 +742,7 @@ namespace Targetron
                         Rect lastRect = GUILayoutUtility.GetLastRect();
                         lastRect.x -= 23;
                         lastRect.width = pos.width - 70;
-                        if (lastRect.Contains(Event.current.mousePosition) && Event.current.type == EventType.mouseUp && Event.current.button == contextBtn)
+                        if (lastRect.Contains(Event.current.mousePosition) && Event.current.type == EventType.MouseUp && Event.current.button == contextBtn)
                             contextActive = target;
 
                         //Display the distance

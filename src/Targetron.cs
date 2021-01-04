@@ -12,7 +12,7 @@ namespace Targetron
     {
         public static GameObject GameObjectInstance;
         private static PluginConfiguration config;
-        private const String VERSION = "1.6.3";
+        private const String VERSION = "1.7.0 beta1";
         private readonly int WINDOWID_GUI = GUIUtility.GetControlID(7225, FocusType.Passive);
         private readonly int WINDOWID_TOOLTIP = GUIUtility.GetControlID(7226, FocusType.Passive);
         private readonly int WINDOWID_CONTEXT = GUIUtility.GetControlID(7227, FocusType.Passive);
@@ -47,8 +47,8 @@ namespace Targetron
         private static readonly Texture2D buttonDistDesc = new Texture2D(16, 16);
 
         //Filters
-        private static List<Filter> filters = new List<Filter>(12);
-        private static List<VesselType> vesselTypes = new List<VesselType>(12);
+        private static List<Filter> filters = new List<Filter>(14);
+        private static List<VesselType> vesselTypes = new List<VesselType>(14);
 
         //GUI Styles
         private static readonly Texture2D contextBGN = new Texture2D(1, 1);
@@ -80,7 +80,7 @@ namespace Targetron
         private static ModuleDockingNode activeDockingNode; //Vessel that is being hovered over in context menu
         private static ModuleDockingNode lastActiveDockingNode; //Vessel that is being hovered over in context menu
 
-        private const int windowWidth = 350; //Window width
+        private const int windowWidth = 400; //Window width
         private const int windowHeight = 194; //Window height
         private static Rect pos = new Rect(0, 0, windowWidth, windowHeight);  //Window position and size
         private static Vector2 scrollPosition = Vector2.zero;  //Scroll Position
@@ -138,6 +138,8 @@ namespace Targetron
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/debris.png"), VesselType.Debris, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/plane.png"), VesselType.Plane, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/relay.png"), VesselType.Relay, true));
+                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_part.png"), VesselType.DeployedSciencePart, true));
+                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_control.png"), VesselType.DeployedScienceController, true));
             }
 
             //Create a separate List of vessel types that are being filtered. This ensures the Debris/Other catches any undefined vessel types.
@@ -278,7 +280,7 @@ namespace Targetron
                             targets.Sort((y, x) => String.CompareOrdinal(x.vessel.GetName(), y.vessel.GetName()));
                             break;
                     }
-
+                    targets.Take(50);
                     //Find available docks
                     List<uint> dockerIDs = new List<uint>();
                     foreach (Target t in targets)
@@ -323,14 +325,14 @@ namespace Targetron
             }
 
             //Close the context menu on left click anywhere outside of it
-            if (contextActive != null && Input.GetMouseButton(0) && !contextPos.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y)))
+            if (contextActive != null && Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Left,false) && !contextPos.Contains(new Vector2(Mouse.screenPos.x, Screen.height - Mouse.screenPos.y)))
                 contextActive = null;
 
-            if (filterRC >= 0 && (Input.GetMouseButton(0) || Input.GetMouseButton(1)) && !pos.Contains(new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y)))
+            if (filterRC >= 0 && (Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Left, false) || Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Right, false)) && !pos.Contains(new Vector2(Mouse.screenPos.x, Screen.height - Mouse.screenPos.y)))
                 filterRC = -1;
 
             //Close the context menu on right click when in IVA
-            if (contextActive != null && (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal) && Input.GetMouseButton(1))
+            if (contextActive != null && (CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.IVA || CameraManager.Instance.currentCameraMode == CameraManager.CameraMode.Internal) && Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Right, false))
                 contextActive = null;
         }
 
@@ -397,8 +399,8 @@ namespace Targetron
                     }
 
                     Vector2 textSize = contextStyle.CalcSize(new GUIContent(longestText));
-                    float left = Input.mousePosition.x - 25;
-                    float _top = Screen.height - Input.mousePosition.y + 10;
+                    float left = Mouse.screenPos.x - 25;
+                    float _top = Mouse.screenPos.y + 10;
                     if (left + textSize.x + 5 > Screen.width)
                         left = Screen.width - textSize.x - 5;
                     if (left < 0)
@@ -420,8 +422,8 @@ namespace Targetron
             if (contextActive == null && tooltip != string.Empty)
             {
                 Vector2 textSize = tooltipStyle.CalcSize(new GUIContent(tooltip));
-                float left = Input.mousePosition.x + 5;
-                float _top = Screen.height - Input.mousePosition.y - 35;
+                float left = Mouse.screenPos.x + 5;
+                float _top = Mouse.screenPos.y - 35;
                 if (left + textSize.x + 10 > Screen.width)
                     left = Screen.width - textSize.x - 10;
                 if (_top < 0)
@@ -661,7 +663,7 @@ namespace Targetron
                     }
                 }
             }
-
+            targets.Take(50);
             //Display toggle for collapsing window
             String tooltipText = "Minimize";
             if (!expand)
@@ -843,17 +845,17 @@ namespace Targetron
                 GUI.backgroundColor = enabledBGColor;
 
                 //Establish resize handles at bottom left and bottom right of the screen
-                Vector3 mousePos = Input.mousePosition;
+                Vector3 mousePos = Mouse.screenPos;
                 mousePos.y = Screen.height - mousePos.y;    // Convert to GUI coords
-                Rect windowHandle = new Rect(pos.x + pos.width - 4, pos.y + pos.height - 4, 4, 4);  //Bottom right handle
-                Rect windowHandle2 = new Rect(pos.x, pos.y + pos.height - 6, 6, 6);     //Bottom left handle
+                Rect windowHandle = new Rect(pos.xMax - 4, pos.yMax - 4, 4, 4);  //Bottom right handle
+                Rect windowHandle2 = new Rect(pos.xMin, pos.yMax - 6, 6, 6);     //Bottom left handle
 
                 if (!handleClicked && !handleClicked2 && windowHandle.Contains(mousePos))    //Check if mouse is within bottom right handle
                 {
                     //Set the cursor to NW resize
                     Cursor.SetCursor(cursorResizeNW, new Vector2(16, 16), CursorMode.Auto);
                     resetCursor = true;
-                    if (Input.GetMouseButtonDown(0))    //Check if left mouse button is pressed
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtonsDown(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
                     {
                         handleClicked = true;   //Set flag for bottom right handle
                         clickedPosition = mousePos; //Save click position
@@ -865,7 +867,7 @@ namespace Targetron
                     //Set the cursor to SW resize
                     Cursor.SetCursor(cursorResizeSW, new Vector2(16, 16), CursorMode.Auto);
                     resetCursor = true;
-                    if (Input.GetMouseButtonDown(0))     //Check if left mouse button is pressed
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtonsDown(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
                     {
                         handleClicked2 = true;  //Set flag for bottom left handle
                         clickedPosition = mousePos; //Save click position
@@ -881,7 +883,7 @@ namespace Targetron
                 if ((handleClicked || handleClicked2))    //If either resize handle is active
                 {
                     // Resize window by dragging
-                    if (Input.GetMouseButton(0))
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Left, false))
                     {
                         if (handleClicked)  //Bottom right handle
                         {
@@ -897,7 +899,7 @@ namespace Targetron
                     }
 
                     // Finish resizing window
-                    if (Input.GetMouseButtonUp(0))
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtonsUp(), Mouse.Buttons.Left, false))
                     {
                         handleClicked = false;
                         handleClicked2 = false;
@@ -910,7 +912,7 @@ namespace Targetron
             tooltip = GUI.tooltip;
 
             //Make window draggable with left mouse button
-            if (!handleClicked && !handleClicked2 && !Input.GetMouseButton(1))
+            if (!handleClicked && !handleClicked2 && !Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Right, false))
                 GUI.DragWindow();
         }
 

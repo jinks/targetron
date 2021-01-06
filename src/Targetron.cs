@@ -47,8 +47,8 @@ namespace Targetron
         private static readonly Texture2D buttonDistDesc = new Texture2D(16, 16);
 
         //Filters
-        private static List<Filter> filters = new List<Filter>(14);
-        private static List<VesselType> vesselTypes = new List<VesselType>(14);
+        private static List<Filter> filters = new List<Filter>();
+        private static List<VesselType> vesselTypes = new List<VesselType>();
 
         //GUI Styles
         private static readonly Texture2D contextBGN = new Texture2D(1, 1);
@@ -96,6 +96,7 @@ namespace Targetron
         private static String searchStr = string.Empty;   //Current search string
         private static int filterRC = -1;    //Last filter icon that was right clicked
         private static bool filterRCval;    //Last filter icon that was right clicked
+        private static int filterEnableCount; //Count for enabled filter
 
         //For (optional) integration with Blizzy's Toolbar Plugin
         private IButton ToolbarButton;
@@ -138,8 +139,11 @@ namespace Targetron
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/debris.png"), VesselType.Debris, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/plane.png"), VesselType.Plane, true));
                 filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/relay.png"), VesselType.Relay, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_part.png"), VesselType.DeployedSciencePart, true));
-                filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_control.png"), VesselType.DeployedScienceController, true));
+                if (Expansions.ExpansionsLoader.IsExpansionInstalled("Serenity"))
+                {
+                    filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_part.png"), VesselType.DeployedSciencePart, true));
+                    filters.Add(new Filter(new WWW("file://" + root + "GameData/Targetron/Icons/deployed_science_control.png"), VesselType.DeployedScienceController, true));
+                }
             }
 
             //Create a separate List of vessel types that are being filtered. This ensures the Debris/Other catches any undefined vessel types.
@@ -280,7 +284,7 @@ namespace Targetron
                             targets.Sort((y, x) => String.CompareOrdinal(x.vessel.GetName(), y.vessel.GetName()));
                             break;
                     }
-                    targets.Take(50);
+                    //targets = targets.Take(50).ToList();
                     //Find available docks
                     List<uint> dockerIDs = new List<uint>();
                     foreach (Target t in targets)
@@ -663,7 +667,7 @@ namespace Targetron
                     }
                 }
             }
-            targets.Take(50);
+            //targets = targets.Take(50).ToList();
             //Display toggle for collapsing window
             String tooltipText = "Minimize";
             if (!expand)
@@ -681,6 +685,7 @@ namespace Targetron
 
                 int vesselFilter;
                 float diff;
+                int showVesselCount = 0;
                 foreach (Target target in targets)  //Iterate through each target vessel
                 {
                     bool showVessel = true;
@@ -768,6 +773,11 @@ namespace Targetron
                     }
                     GUILayout.EndHorizontal();
                     top += 24;
+                    showVesselCount++;
+                    if (showVesselCount >= 50)
+                    {
+                        break;
+                    }
                 }
                 // Ugly workaround for don't cut off the last entry in the target list
                 top += 12;
@@ -800,6 +810,14 @@ namespace Targetron
                      top += 24;
                  }*/
                 GUI.EndScrollView();
+                filterEnableCount = 0;
+                for (i = 0; i < filters.Count; i++)
+                {
+                    if (filters[i].Enabled)
+                    {
+                        filterEnableCount++;
+                    }
+                }
 
                 //Draw each filter button, graying it out if disabled
                 for (i = 0; i < filters.Count; i++)
@@ -818,25 +836,70 @@ namespace Targetron
                         !GUI.Button(new Rect(pos.width - 28 - 23 * i, pos.height - 25, 24, 24),
                             new GUIContent(filters[i].Texture, filters[i].getName()), buttonStyle2)) continue;
                     filters[i].toggle();
-                    if (Event.current.button == 1)
+                    if (Event.current.button == 0)
                     {
                         filterRC = i;
                         filterRCval = filters[i].Enabled;
                     }
                     else
                     {
+                        //filterRC = i;
+                        //filterRCval = filters[i].Enabled;
+                        if(filters[i].Enabled && filterEnableCount == 1)
+                        {
+                            for (j = 0; j < filters.Count; j++)
+                            {
+                                if (j != i)
+                                {
+                                    filters[j].Enabled = false;
+                                }
+                                else
+                                {
+                                    filters[i].Enabled = true;
+                                }
+                            }
+                        }
+                        else if(!filters[i].Enabled && filterEnableCount == 1)
+                        {
+                            for (j = 0; j < filters.Count; j++)
+                            {
+                                if (j != i)
+                                {
+                                    filters[j].Enabled = true;
+                                }
+                                else
+                                {
+                                    filters[i].Enabled = true;
+                                }
+                            }
+                        }
+                        else if (filterEnableCount > 1)
+                        {
+                            for (j = 0; j < filters.Count; j++)
+                            {
+                                if (j != i)
+                                {
+                                    filters[j].Enabled = false;
+                                }
+                                else
+                                {
+                                    filters[i].Enabled = true;
+                                }
+                            }
+                        }
                         if (filterRC >= 0)
                         {
-                            if (i > filterRC)
-                            {
-                                for (j = filterRC + 1; j <= i; j++)
-                                    filters[j].Enabled = filterRCval;
-                            }
-                            else
-                            {
-                                for (j = i; j < filterRC; j++)
-                                    filters[j].Enabled = filterRCval;
-                            }
+                            //if (i > filterRC)
+                            //{
+                            //    for (j = filterRC + 1; j <= i; j++)
+                            //        filters[j].Enabled = filterRCval;
+                            //}
+                            //else
+                            //{
+                            //    for (j = i; j < filterRC; j++)
+                            //        filters[j].Enabled = filterRCval;
+                            //}
+
                         }
                         filterRC = -1;
                     }
@@ -846,7 +909,6 @@ namespace Targetron
 
                 //Establish resize handles at bottom left and bottom right of the screen
                 Vector3 mousePos = Mouse.screenPos;
-                mousePos.y = Screen.height - mousePos.y;    // Convert to GUI coords
                 Rect windowHandle = new Rect(pos.xMax - 4, pos.yMax - 4, 4, 4);  //Bottom right handle
                 Rect windowHandle2 = new Rect(pos.xMin, pos.yMax - 6, 6, 6);     //Bottom left handle
 
@@ -855,7 +917,7 @@ namespace Targetron
                     //Set the cursor to NW resize
                     Cursor.SetCursor(cursorResizeNW, new Vector2(16, 16), CursorMode.Auto);
                     resetCursor = true;
-                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtonsDown(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
                     {
                         handleClicked = true;   //Set flag for bottom right handle
                         clickedPosition = mousePos; //Save click position
@@ -867,7 +929,7 @@ namespace Targetron
                     //Set the cursor to SW resize
                     Cursor.SetCursor(cursorResizeSW, new Vector2(16, 16), CursorMode.Auto);
                     resetCursor = true;
-                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtonsDown(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
+                    if (Mouse.CheckButtons(Mouse.GetAllMouseButtons(), Mouse.Buttons.Left, false))     //Check if left mouse button is pressed
                     {
                         handleClicked2 = true;  //Set flag for bottom left handle
                         clickedPosition = mousePos; //Save click position
